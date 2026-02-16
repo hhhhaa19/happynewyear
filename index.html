@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 丙午马年·万马奔腾</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #FFD700;
+            --red: #d32f2f;
+            --dark-red: #8b0000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at center, #a50000 0%, #4a0000 70%, #2b0000 100%);
+            color: var(--gold);
+            font-family: 'Ma Shan Zheng', cursive, serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* 1. 烟花画布层 */
+        #fireworks-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-overlay {
+            position: absolute; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/shattered-island.png');
+            opacity: 0.05; pointer-events: none; z-index: 1;
+        }
+
+        /* 2. 气势对联 (调大版) */
+        .couplet {
+            position: absolute; 
+            top: 10%; 
+            width: 90px;        /* 宽度调大 */
+            background: var(--red); 
+            border: 2px solid var(--gold);
+            padding: 35px 15px; 
+            text-align: center;
+            font-size: 3rem;    /* 字体大幅调大 */
+            line-height: 1.1;
+            color: var(--gold); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            z-index: 8;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+        /* 对联装饰头尾 */
+        .couplet::before, .couplet::after {
+            content: ''; position: absolute; left: -5px; right: -5px; height: 10px;
+            background: var(--gold); border-radius: 5px;
+        }
+        .couplet::before { top: -5px; }
+        .couplet::after { bottom: -5px; }
+
+        .c-left { left: 4%; }
+        .c-right { right: 4%; }
+
+        /* 3. 宫灯 */
+        .lantern-container {
+            position: absolute; top: -10px; z-index: 10;
+            display: flex; flex-direction: column; align-items: center;
+            animation: swing 3s infinite ease-in-out alternate;
+            transform-origin: top center;
+        }
+        .lantern-body {
+            width: 110px; height: 90px;
+            background: radial-gradient(circle at center, #ff4444, #8b0000);
+            border-radius: 50% 50% 45% 45%;
+            position: relative;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.5);
+        }
+        .lantern-cap { width: 55px; height: 12px; background: var(--gold); border-radius: 3px; }
+        .lantern-tassel { width: 4px; height: 70px; background: var(--gold); margin-top: 5px; box-shadow: 0 0 10px var(--gold); }
+        
+        @keyframes swing { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+        .l-left { left: 18%; } .l-right { right: 18%; animation-delay: -1.5s; }
+
+        /* 4. 核心内容 */
+        .content { z-index: 5; text-align: center; }
+
+        h1 {
+            font-size: 7rem; letter-spacing: 12px;
+            background: linear-gradient(to bottom, #FFD700, #fce043, #ffb300);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8));
+        }
+        h2 { font-size: 3rem; color: #fff; margin: 15px 0; letter-spacing: 5px; }
+        .sub-text { font-size: 1.4rem; margin-bottom: 40px; color: #ffcccc; letter-spacing: 2px; }
+
+        .timer-box {
+            padding: 18px 50px; background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--gold); border-radius: 60px;
+            display: inline-block; backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(255,215,0,0.3);
+        }
+        .timer-text { font-family: 'Courier New', monospace; font-size: 2.5rem; font-weight: bold; color: #fff; }
+        .timer-text span { font-size: 1.1rem; margin: 0 8px; color: var(--gold); font-family: 'Ma Shan Zheng'; }
+
+        /* 5. 抽奖卡片 */
+        .card-container {
+            width: 350px; background: rgba(255, 255, 255, 0.95); border: 4px solid var(--gold);
+            border-radius: 20px; padding: 25px; margin: 40px auto;
+            position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        }
+        .scratch-box {
+            background: #ccc; height: 100px; display: flex; align-items: center; justify-content: center;
+            color: #666; cursor: pointer; border-radius: 12px; font-weight: bold; font-size: 1.2rem;
+            background-image: repeating-linear-gradient(45deg, #bbb, #bbb 10px, #ccc 10px, #ccc 20px);
+            border: 2px dashed #999;
+            transition: 0.3s ease;
+        }
+        .scratch-box:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+        /* 底部马背景 */
+        .horse-container {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 850px; opacity: 0.15; z-index: 1;
+            mix-blend-mode: screen; pointer-events: none;
+        }
+        .horse-img { width: 200%; height: auto; }
+
+        @media (max-width: 900px) {
+            .couplet, .lantern-container { display: none; }
+            h1 { font-size: 4rem; }
+            h2 { font-size: 2.5rem; }
+            .timer-text { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fireworks-canvas"></canvas>
+    <div class="bg-overlay"></div>
+
+    <div class="lantern-container l-left"><div class="lantern-cap"></div><div class="lantern-body"></div><div class="lantern-tassel"></div></div>
+    <div class="lantern-container l-right"><div class="lantern-cap"></div><div class="lantern-body"></div><div class="lantern-tassel"></div></div>
+
+    <div class="couplet c-left">万马奔腾迎盛世</div>
+    <div class="couplet c-right">五福临门贺新春</div>
+
+    <div class="horse-container">
+        <img src="./2.png" class="horse-img" alt="火马背景">
+    </div>
+
+    <div class="content">
+        <h1>加贝</h1>
+        <h2>2026 丙午马年</h2>
+        <p class="sub-text">祝亲爱的宝宝：龙马精神，万事顺遂！！</p>
+
+        <div class="timer-box">
+            <div class="timer-text" id="timer">00<span>天</span>00<span>时</span>00<span>分</span>00<span>秒</span></div>
+        </div>
+
+        <div class="card-container">
+            <div style="color: #b30000; font-size: 1.3rem; font-weight: bold; margin-bottom: 20px;">🧧 2026 马年好运抽奖</div>
+            <div class="scratch-box" id="scratch" onclick="revealLucky()">
+                ✨ 点击刮开惊喜 ✨
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 烟花引擎逻辑 ---
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.velocity = { x: (Math.random() - 0.5) * 10, y: (Math.random() - 0.5) * 10 };
+                this.alpha = 1; this.friction = 0.96;
+            }
+            draw() {
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                this.velocity.x *= this.friction; this.velocity.y *= this.friction;
+                this.velocity.y += 0.08;
+                this.x += this.velocity.x; this.y += this.velocity.y;
+                this.alpha -= 0.012;
+            }
+        }
+
+        function createFirework(x, y) {
+            const colors = ['#FFD700', '#FF4500', '#FF0000', '#FFFFFF', '#00FF00', '#4488FF'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            for (let i = 0; i < 60; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'; // 尾迹感
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (Math.random() < 0.06) createFirework(Math.random() * canvas.width, Math.random() * canvas.height * 0.6);
+            particles.forEach((p, i) => {
+                if (p.alpha > 0) { p.update(); p.draw(); } else { particles.splice(i, 1); }
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- 抽奖逻辑 (增加到 5 个奖项) ---
+        function revealLucky() {
+            const box = document.getElementById('scratch');
+            const prizePool = [
+                '520 红包',
+                '叶罗丽bjd',
+                '52 红包',
+                '188 红包',
+                '再来一次'
+            ];
+            const result = prizePool[Math.floor(Math.random() * prizePool.length)];
+
+            box.style.background = 'white';
+            box.style.border = '2px dashed var(--red)';
+            box.innerHTML = `<span style="color:#d32f2f; font-size:1.8rem; font-weight:bold; letter-spacing:1px;">${result}</span>`;
+            
+            // 刮开时在屏幕炸裂一朵大烟花
+            createFirework(window.innerWidth / 2, window.innerHeight / 2);
+        }
+
+        // --- 倒计时逻辑 ---
+        function updateTimer() {
+            const target = new Date("2026-02-17T00:00:00+08:00").getTime();
+            const now = new Date().getTime();
+            const distance = target - now;
+            const timerElement = document.getElementById("timer");
+
+            if (distance < 0) {
+                timerElement.innerHTML = "🎉 新 春 快 乐 🎉";
+                return;
+            }
+
+            const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((distance % (1000 * 60)) / 1000);
+            const pad = (n) => n < 10 ? '0' + n : n;
+
+            timerElement.innerHTML = `${pad(d)}<span>天</span>${pad(h)}<span>时</span>${pad(m)}<span>分</span>${pad(s)}<span>秒</span>`;
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+</body>
+</html>
